@@ -32,17 +32,17 @@ const createContact = async (req, res) => {
 
 const updateContact = async (req, res) => {
   const { id } = req.params;
-  const { body } = req;
+  const bodyIsEmpty = Object.keys(req.body).length === 0;
 
-  if (Object.keys(body).length === 0) {
-    throw HttpError(400, "Bad Request");
+  if (bodyIsEmpty) {
+    throw HttpError(400, "Body must have at least one field");
   }
 
-  const result = await updateContactById(id, body);
+  const result = await updateContactById(id, req.body);
   if (!result) {
     throw HttpError(404);
   }
-  res.json(result);
+  res.status(200).json(result);
 };
 
 const controllers = {
