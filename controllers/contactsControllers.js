@@ -1,4 +1,4 @@
-import { listContacts, getContactById, removeContact, addContact, updateContactById } from "../services/contactsServices.js";
+import * as contactsServices from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 
@@ -9,7 +9,7 @@ const getAllContacts = async (req, res) => {
 
 const getOneContact = async (req, res) => {
   const { id } = req.params;
-  const result = await getContactById(id);
+  const result = await contactsServices.getContactById(id);
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -18,7 +18,7 @@ const getOneContact = async (req, res) => {
 
 const deleteContact = async (req, res) => {
   const { id } = req.params;
-  const result = await removeContact(id);
+  const result = await contactsServices.removeContact(id);
   if (!result) {
     throw HttpError(404);
   }
@@ -26,26 +26,34 @@ const deleteContact = async (req, res) => {
 };
 
 const createContact = async (req, res) => {
-  const result = await addContact(req.body);
+  const result = await contactsServices.addContact(req.body);
   res.status(201).json(result);
 };
 
 const updateContact = async (req, res) => {
   const { id } = req.params;
-  const result = await updateContactById(id, req.body);
-
+  const result = await contactsServices.updateContactById(id, req.body);
+  
   if (!result) {
     throw HttpError(404);
   }
   res.status(200).json(result);
 };
 
-const controllers = {
+const updateStatusContact = async (req, res) => {
+    const { id } = req.params;
+    const result = await contactsServices.updateContactById(id, req.body);
+    if (!result) {
+      throw HttpError(404);
+    }
+    res.json(result);
+};
+
+export default {
   getAllContacts: ctrlWrapper(getAllContacts),
   getOneContact: ctrlWrapper(getOneContact),
   deleteContact: ctrlWrapper(deleteContact),
   createContact: ctrlWrapper(createContact),
   updateContact: ctrlWrapper(updateContact),
+  updateStatusContact: ctrlWrapper(updateStatusContact),
 };
-
-export default controllers;

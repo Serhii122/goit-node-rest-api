@@ -1,57 +1,14 @@
-import { promises as fs } from "fs";
-import path from "path";
-import { nanoid } from "nanoid";
+import Contact from "../model/Contact.js";
 
-const contactsPath = path.resolve("db", "contacts.json");
+export const listContacts = () => Contact.find();
 
-export async function listContacts() {
-  const data = await fs.readFile(contactsPath);
-  return JSON.parse(data);
-}
+export const getContactById = (id) => Contact.findById(id);
 
-export async function getContactById(contactId) {
-  const contacts = await listContacts();
-  const contact = contacts.find((element) => element.id === contactId);
-  return contact || null;
-}
+export const addContact = (data) => Contact.create(data);
 
-export async function removeContact(contactId) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex((element) => element.id === contactId);
-  if (index === -1) return null;
+export const updateContactById = (id, data) => exportContact.findByIdAndUpdate(id, data);
 
-  const removeContact = contacts.splice(index, 1);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return removeContact[0];
-}
+export const removeContact = (id) => Contact.findByIdAndDelete(id);
 
-export async function addContact({ name, email, phone }) {
-  const contacts = await listContacts();
-  const newContact = {
-    id: nanoid(),
-    name,
-    email,
-    phone,
-  };
-
-  contacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return newContact;
-}
-
-export async function updateContactById(contactId, data) {
-  const contacts = await listContacts();
-
-  const index = contacts.findIndex((el) => el.id === contactId);
-  if (index === -1) return null;
-
-  const currentContact = contacts[index];
-  const updatedContact = {
-    ...currentContact,
-    ...data,
-  };
-  contacts[index] = updatedContact;
-
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return updatedContact;
-}
+export const updateStatusContact = (id, data) =>
+  Contact.findByIdAndUpdate(id, data);
